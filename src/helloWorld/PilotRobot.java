@@ -22,11 +22,11 @@ import lejos.robotics.navigation.Pose;
 // 1st October 2018
 //
 
-class Point{
+class Cell{
 	int x;
 	int y;
 	boolean visited = false;
-	public Point(int x ,int y) {
+	public Cell(int x ,int y) {
 		x = x;
 		y =y ;
 	}
@@ -41,10 +41,10 @@ class Point{
 };
 
 class Paths{
-	Point first = new Point(25,25);
-	Point Second = new Point(25,125);
-	Point Third = new Point(100,125);
-	Point Fourth = new Point(100,25);
+	Cell first = new Cell(25,25);
+	Cell second = new Cell(25,125);
+	Cell third = new Cell(100,125);
+	Cell fourth = new Cell(100,25);
 };
 
 public class PilotRobot {
@@ -57,6 +57,7 @@ public class PilotRobot {
 	float lastAngle = 0;
 	OdometryPoseProvider opp;
 	Pose myPose;
+	Paths searchTree = new Paths();
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
 

@@ -31,8 +31,11 @@ public class DriveNextPath {
 		// Allow this method to run
 		suppressed = false;
 		
-		// Go forward
-		me.getPilot().forward();
+		Cell nextCell = nextPath();
+		if(!(nextCell == null)) {
+			// Go forward
+			goToNextPath();
+		}
 		// While we can run, yield the thread to let other threads run.
 		// It is important that no action function blocks any otherf action.
 		while (!suppressed) {
@@ -42,5 +45,41 @@ public class DriveNextPath {
 	    // Ensure that the motors have stopped.
 		me.getPilot().stop();
 		me.setPose();
+	}
+	
+	public Cell nextPath() {
+		for(int i =0; i < 4; i++) {
+			switch (i) {
+			case 0:
+				if(!me.searchTree.first.visited) {
+					return me.searchTree.first;
+				}
+				break;
+			case 1:
+				if(!me.searchTree.second.visited) {
+					return me.searchTree.first;
+				}
+				break;
+			case 2:
+				if(!me.searchTree.third.visited) {
+					return me.searchTree.first;
+				}
+				break;
+			case 3:
+				if(!me.searchTree.fourth.visited) {
+					return me.searchTree.first;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+		}
+		return null;
+	}
+
+	public void goToNextPath() {
+		// A* to nextPath()
 	}
 }

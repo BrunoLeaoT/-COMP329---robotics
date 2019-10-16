@@ -35,7 +35,9 @@ public class BumperCarSimple {
 		// Tell the user to start
 		myMonitor.setMessage("Press a key to start");				
         Button.waitForAnyPress();
-        
+		me.getPilot().travel(25);
+		me.turnMotors(90);
+		me.getPilot().travel(25);
         // Start the Arbitrator
 		arby.go();
 	}

@@ -14,7 +14,6 @@ public class Map {
     
 	public void fillMap(PilotRobot me) {
 		int cellSideSize = 18;
-		int robotSize = cellSideSize/2;
 		GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
 		//lcd.drawRect(x, y, width, height);
 		for(int j = 0; j< 7; j ++) {
@@ -23,7 +22,8 @@ public class Map {
 			}
 		lcd.setFont(Font.getSmallFont());
 		lcd.drawString("Position robot:", 120 , 0, 0);
-		lcd.drawString("" + robot.getPose(), 110, 20, 0);
+		lcd.drawString("X: " + robot.getPose().getX() + "Y: " + robot.getPose().getY() , 110, 20, 0);
+		lcd.drawString("H: " + robot.getPose().getHeading() , 110, 20, 0);
 		}
 	}
 }
