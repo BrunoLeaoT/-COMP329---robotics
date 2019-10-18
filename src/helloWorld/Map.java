@@ -6,7 +6,7 @@ import lejos.hardware.lcd.GraphicsLCD;
 
 
 public class Map {
-	Float map[][];
+	//Boolean map[][];
 	public PilotRobot robot;
     public Map(PilotRobot r){
     	robot = r;
@@ -22,8 +22,11 @@ public class Map {
 			}
 		lcd.setFont(Font.getSmallFont());
 		lcd.drawString("Position robot:", 120 , 0, 0);
-		lcd.drawString("X: " + robot.getPose().getX() + "Y: " + robot.getPose().getY() , 110, 20, 0);
-		lcd.drawString("H: " + robot.getPose().getHeading() , 110, 20, 0);
+		
+		lcd.drawString("X: " + robot.getPose().getX() , 110, 20, 0);
+		lcd.drawString("Y: " + robot.getPose().getY() , 110, 40, 0);
+		lcd.drawString("H: " + robot.getPose().getHeading() , 110, 60, 0);
+		lcd.drawString("Cell:" + robot.stateCell.x + ","+  robot.stateCell.y, 110, 80, 0);
 		}
 	}
 }

@@ -18,7 +18,7 @@ public class BumperCarSimple {
 		PilotMonitor myMonitor = new PilotMonitor(me, 400);	
 
 		// Set up the behaviours for the Arbitrator and construct it.
-		Behavior b1 = new DriveForward(me);
+		Behavior b1 = new DriveNextPath(me);
 		Behavior b2 = new BackUp(me);
 		Behavior [] bArray = {b1, b2};
 		Arbitrator arby = new Arbitrator(bArray);
@@ -35,9 +35,7 @@ public class BumperCarSimple {
 		// Tell the user to start
 		myMonitor.setMessage("Press a key to start");				
         Button.waitForAnyPress();
-		me.getPilot().travel(25);
-		me.turnMotors(90);
-		me.getPilot().travel(25);
+
         // Start the Arbitrator
 		arby.go();
 	}

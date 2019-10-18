@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import helloWorld.Cell;
 import lejos.robotics.subsumption.Behavior;
+import lejos.utility.Delay;
 
 public class DriveNextPath implements Behavior{
 	public boolean suppressed;
@@ -56,7 +57,7 @@ public class DriveNextPath implements Behavior{
 		me.setPose();
 	}
 	
-	public Cell nextPath() {
+	public Cell nextPath() { 
 		for(int i =0; i < 4; i++) {
 			switch (i) {
 			case 0:
@@ -89,10 +90,14 @@ public class DriveNextPath implements Behavior{
 	}
 
 	public void goToNextPath(Cell goalCell) {
-		ArrayList<Cell> path = (ArrayList<Cell>) AStar(map, goalCell, me.stateCell);
+		List<Cell> path = (ArrayList<Cell>) AStar(me.map, goalCell, me.stateCell);
 		for(int i =0; i < path.size();i++) {
 			Cell nextCell = path.get(i);
-
+			System.out.println(nextCell.y + ";" + nextCell.x);
+		}
+		Delay.msDelay(1000);
+		for(int i =0; i < path.size();i++) {
+			Cell nextCell = path.get(i);
 			if(nextCell.x != me.stateCell.x) {
 				TravelToCell("x", nextCell);
 			}
@@ -103,19 +108,23 @@ public class DriveNextPath implements Behavior{
 			
 			if(me.getDistance() < 0.08) {
 				me.assiningObstacle();
+				// Check if nextCell == Desired Final Cell, to put visited
 				goToNextPath(goalCell);
 				break;
 			}
 		}
+		assignVisited();
 	}
 	
 	public void TravelToCell(String axis, Cell nextCell) {
 		int side = me.getDirectionHeading();
+		
 		if(axis.equals("x")) {
 			if(nextCell.x > me.stateCell.x) {
 				if(side != 1)
 					AdjustMyPosition(1, side);
-			else 
+			}
+			else { 
 				if(side != 3)
 					AdjustMyPosition(3, side);
 			}
@@ -126,7 +135,8 @@ public class DriveNextPath implements Behavior{
 			if(nextCell.y > me.stateCell.y) {
 				if(side != 0)
 					AdjustMyPosition(0, side);
-			else 
+			}
+			else {
 				if(side != 2)
 					AdjustMyPosition(2, side);
 			}
@@ -136,13 +146,50 @@ public class DriveNextPath implements Behavior{
 	}
 	
 	public void AdjustMyPosition(int desired, int now) {
+		Delay.msDelay(1000);
 		while(now != desired) {
+			System.out.println("Desired: " + desired);
+			System.out.println(" Now: " + now);
 			me.turnMotors(90);
 			now = me.getDirectionHeading();
+			if(now == 4) {
+				now = 0;
+			}
 		}
 	}
 	
-	public static List<Cell> AStar(Cell sucessors[][], Cell goal, Cell state) {
+	public void assignVisited() {
+		for(int i =0; i < 4; i++) {
+			switch (i) {
+			case 0:
+				if(me.stateCell.x == me.searchTree.first.x && me.stateCell.y == me.searchTree.first.y ) {
+					me.searchTree.first.visited = true;;
+				}
+				break;
+			case 1:
+				if(me.stateCell.x == me.searchTree.second.x && me.stateCell.y == me.searchTree.second.y ) {
+					me.searchTree.second.visited = true;;
+				}
+				break;
+			case 2:
+				if(me.stateCell.x == me.searchTree.third.x && me.stateCell.y == me.searchTree.third.y ) {
+					me.searchTree.third.visited = true;;
+				}
+				break;
+			case 3:
+				if(me.stateCell.x == me.searchTree.fourth.x && me.stateCell.y == me.searchTree.fourth.y ) {
+					me.searchTree.fourth.visited = true;;
+				}
+				break;
+
+			default:
+				break;
+			}
+
+		}
+	}
+	
+	public List<Cell> AStar(Cell sucessors[][], Cell goal, Cell state) {
 		ArrayList<ArrayList<Cell>> frontier = new ArrayList<>();
 		frontier.add(new ArrayList<Cell>());
 		frontier.get(0).add(state);
@@ -154,56 +201,68 @@ public class DriveNextPath implements Behavior{
 				return lowerCost;
 			}
 			else {
-				AddingSucessors(frontier, lowerCost, sucessors);
+				AddingSucessors(frontier, lowerCost, me.map, goal);
 			}
 		}
 		return null;
 	}
 	
-	
-	public static int cost(ArrayList<ArrayList<Cell>> frontier, Cell goal) {
+	public int cost(ArrayList<ArrayList<Cell>> frontier, Cell goal) {
 		int min = 0;
 		int auxIndex = 0;
 		for(int i = 0;i < frontier.size(); i++ ) {
 			Cell lastCellOfPath = frontier.get(i).get(frontier.get(i).size() - 1);
-			if(!lastCellOfPath.obstacle) {
-				int g = lastCellOfPath.x + lastCellOfPath.y;
-				int h = (goal.x -  lastCellOfPath.x) +  (goal.y -lastCellOfPath.y);
-				if( g+h < min){
-					min = g+h;
-					auxIndex = i;
-				}
+			int g = lastCellOfPath.x + lastCellOfPath.y;
+			int h = (goal.x -  lastCellOfPath.x) +  (goal.y -lastCellOfPath.y);
+			if( g+h < min){
+				min = g+h;
+				auxIndex = i;
 			}
 		}
 		return auxIndex;
 	}
-	
-	public static void AddingSucessors(ArrayList<ArrayList<Cell>> frontier, ArrayList<Cell> lowerCost, Cell sucessors[][]) {
+	public void AddingSucessors(ArrayList<ArrayList<Cell>> frontier, ArrayList<Cell> lowerCost, Cell sucessors[][], Cell goal) {
 		Cell lastCell = lowerCost.get(lowerCost.size() - 1);
 		if((lastCell.x + 1) <= 5) {
 			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y][lastCell.x + 1]);
-			frontier.add(aux); 
+			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
+			{
+				frontier.add(aux); 
+			}
+				 
 
-		}else if((lastCell.x -1) >= 0) {
+		}else if((lastCell.x -1) >= 0 ) {
 			ArrayList<Cell> aux =(ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y][lastCell.x - 1]);
-			frontier.add(aux);
+			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
+				frontier.add(aux);  
 		}
-		if((lastCell.y + 1) <= 6 ) {
+		if((lastCell.y + 1) <= 6) {
 			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y + 1 ][lastCell.x]);
-			frontier.add(aux);
+			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
+				frontier.add(aux);  
 
 		}else if((lastCell.y -1) >= 0) {
 			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y - 1][lastCell.x]);
-			frontier.add(aux);
+			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
+			{
+				frontier.add(aux); 
+			}
 		}
 		
 	}
 	
-	public static ArrayList<ArrayList<Cell>> removeElement(ArrayList<ArrayList<Cell>> frontier, List<Cell> lowerCost) {
+	public boolean checkIfIsGoal(Cell goal, Cell test) {
+		if(goal.x == test.x && goal.y == test.y) {
+			return true;
+		}
+		return false;
+	}
+	
+	public ArrayList<ArrayList<Cell>> removeElement(ArrayList<ArrayList<Cell>> frontier, List<Cell> lowerCost) {
         for(int i = 0; i < frontier.size(); i++){
             if(frontier.get(i) == lowerCost){
                 // shifting elements

@@ -22,30 +22,6 @@ import lejos.robotics.navigation.Pose;
 // 1st October 2018
 //
 
-class Cell{
-	int x;
-	int y;
-	boolean visited = false;
-	public Cell(int x ,int y) {
-		x = x;
-		y =y ;
-	}
-	
-	public void setVisited(boolean state) {
-		visited = state;
-	}
-	
-	public boolean getVisited() {
-		return visited;
-	}
-};
-
-class Paths{
-	Cell first = new Cell(25,25);
-	Cell second = new Cell(25,125);
-	Cell third = new Cell(100,125);
-	Cell fourth = new Cell(100,25);
-};
 
 public class PilotRobot {
 	private EV3TouchSensor leftBump, rightBump;	
@@ -54,10 +30,13 @@ public class PilotRobot {
 	private SampleProvider leftSP, rightSP, distSP, gyroSP;	
 	private float[] leftSample, rightSample, distSample, angleSample; 
 	private MovePilot pilot;
-	float lastAngle = 0;
+	double lastAngle = 0;
 	OdometryPoseProvider opp;
 	Pose myPose;
 	Paths searchTree = new Paths();
+	Cell map[][] = null;
+	Cell stateCell = new Cell(0,0);
+	
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
 
@@ -88,7 +67,10 @@ public class PilotRobot {
 
 	    pilot = new MovePilot(myChassis);
     	opp = new OdometryPoseProvider(pilot);
+		setPose();
 		// Reset the value of the gyroscope to zero
+    	initializeMap();
+    	
 		gSensor.reset();
 	}
 	
@@ -132,20 +114,28 @@ public class PilotRobot {
     	return angleSample[0];
 	}
 	
+	public int getDirectionHeading() {
+		if(getAngle()>360)
+			return (int) ((getAngle()%360)/90);
+		else
+			return Math.round(getAngle()/90);
+	}
+	
 	public MovePilot getPilot() {
 		return pilot;
 	}
 	
 	 public void adjustPosition(double turnIntention) {
-    	float adjusted = 0;
-    	float angle  = getAngle();
-    	float realAngle = angle - lastAngle;
-    	adjusted = (float) (realAngle - turnIntention);
+		double adjusted = 0;
+		double angle  = getAngle();
+		double realAngle = angle - lastAngle;
+    	adjusted = (double) (turnIntention - realAngle);
         pilot.rotate(adjusted);
         lastAngle = angle + adjusted;
     }
 
     public void turnMotors(double angle){
+    	pilot.setAngularAcceleration(70);
 		pilot.rotate(angle);
 		adjustPosition(angle);
     }
@@ -153,7 +143,50 @@ public class PilotRobot {
     public void setPose() {
     	myPose = opp.getPose();
     }
-    public Pose getPose() {	
+    
+    public Pose getPose() {
     	return myPose;
+    }
+    
+    private void initializeMap() {
+    	this.map = new Cell[7][6];
+    	for(int i = 0;i<7;i++) {
+    		for(int j = 0;j<6;j++) {
+    			this.map[i][j] = new Cell(0,0);
+    			this.map[i][j].x = j;
+    			this.map[i][j].y = i;
+        	}
+    	}
+    	stateCell = this.map[0][0];
+    }
+    
+    public void assiningObstacle() {
+		int side = getDirectionHeading();
+		switch (side) {
+		case 0: // Facing the initial position
+			if(getDistance() < 0.08 && (stateCell.y) != 7) {
+				map[stateCell.x][stateCell.y].obstacle = true;
+			}
+			break;
+		case 1: // Turned to the right from the initial position
+			if(getDistance() < 0.08 &&(stateCell.x) != 06) {
+				map[stateCell.x][stateCell.y].obstacle = true;
+			}
+			break;
+			
+		case 2: // Turned 180 from the initial position
+			if(getDistance() < 0.08 && (stateCell.y) != 0 ) {
+				map[stateCell.x][stateCell.y].obstacle = true;
+			}
+			break;
+			
+		case 3: // Turned to the left from the initial position
+			if(getDistance() < 0.08 && (stateCell.x) != 0 ) {
+				map[stateCell.x][stateCell.y].obstacle = true;
+			}
+			break;
+		default:
+			break;
+		}
     }
 }

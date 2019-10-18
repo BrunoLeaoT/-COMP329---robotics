@@ -34,6 +34,7 @@ public class BackUp implements Behavior {
 	// When called, determine if this behaviour should start
 	public boolean takeControl(){
 		if (me.isLeftBumpPressed() || me.isRightBumpPressed() || me.isTooCloseUS()) {
+			me.assiningObstacle();
 			return true;
 		}
 		return false;
