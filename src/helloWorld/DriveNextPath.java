@@ -82,6 +82,7 @@ public class DriveNextPath implements Behavior{
 				break;
 
 			default:
+				System.out.println("No where to go");
 				break;
 			}
 
@@ -106,14 +107,21 @@ public class DriveNextPath implements Behavior{
 				TravelToCell("y", nextCell);
 			}
 			
-			if(me.getDistance() < 0.08) {
+			if(me.getDistance() < 0.08 && me.stateCell.y != 0 && me.stateCell.y != 6 && me.stateCell.x != 0 && me.stateCell.x != 5) {
 				me.assiningObstacle();
-				// Check if nextCell == Desired Final Cell, to put visited
+				if(nextCell.x == goalCell.x && nextCell.y == goalCell.y ) {
+					assignVisited(nextCell);
+					goalCell = nextPath();
+				}
 				goToNextPath(goalCell);
 				break;
 			}
 		}
-		assignVisited();
+		
+		assignVisited(me.stateCell);
+		Cell nextCell = nextPath();
+		if(nextCell != null)
+			goToNextPath(nextCell);
 	}
 	
 	public void TravelToCell(String axis, Cell nextCell) {
@@ -128,7 +136,9 @@ public class DriveNextPath implements Behavior{
 				if(side != 3)
 					AdjustMyPosition(3, side);
 			}
-			me.getPilot().travel(25);
+			float angleBefore = me.getAngle();
+			me.run(25);
+			AdjustMyAngle(angleBefore);
 			me.stateCell.x = nextCell.x;
 		}
 		else {
@@ -140,11 +150,16 @@ public class DriveNextPath implements Behavior{
 				if(side != 2)
 					AdjustMyPosition(2, side);
 			}
-			me.getPilot().travel(25);
+			float angleBefore = me.getAngle();
+			me.run(25);
+			AdjustMyAngle(angleBefore);
 			me.stateCell.y = nextCell.y;
 		}
 	}
-	
+	public void AdjustMyAngle(float angle) {
+		float diff = angle - me.getAngle();
+		me.turnMotors(diff);
+	}
 	public void AdjustMyPosition(int desired, int now) {
 		Delay.msDelay(1000);
 		while(now != desired) {
@@ -152,33 +167,35 @@ public class DriveNextPath implements Behavior{
 			System.out.println(" Now: " + now);
 			me.turnMotors(90);
 			now = me.getDirectionHeading();
-			if(now == 4) {
-				now = 0;
-			}
+
 		}
 	}
 	
-	public void assignVisited() {
+	public void assignVisited(Cell cell) {
 		for(int i =0; i < 4; i++) {
 			switch (i) {
 			case 0:
-				if(me.stateCell.x == me.searchTree.first.x && me.stateCell.y == me.searchTree.first.y ) {
-					me.searchTree.first.visited = true;;
+				if(cell.x == me.searchTree.first.x && cell.y == me.searchTree.first.y ) {
+					me.searchTree.first.visited = true;
+					System.out.println("Assigned One");
 				}
 				break;
 			case 1:
-				if(me.stateCell.x == me.searchTree.second.x && me.stateCell.y == me.searchTree.second.y ) {
-					me.searchTree.second.visited = true;;
+				if(cell.x == me.searchTree.second.x && cell.y == me.searchTree.second.y ) {
+					me.searchTree.second.visited = true;
+					System.out.println("Assigned Two");
 				}
 				break;
 			case 2:
-				if(me.stateCell.x == me.searchTree.third.x && me.stateCell.y == me.searchTree.third.y ) {
-					me.searchTree.third.visited = true;;
+				if(cell.x == me.searchTree.third.x && cell.y == me.searchTree.third.y ) {
+					me.searchTree.third.visited = true;
+					System.out.println("Assigned Three");
 				}
 				break;
 			case 3:
-				if(me.stateCell.x == me.searchTree.fourth.x && me.stateCell.y == me.searchTree.fourth.y ) {
-					me.searchTree.fourth.visited = true;;
+				if(cell.x == me.searchTree.fourth.x && cell.y == me.searchTree.fourth.y ) {
+					me.searchTree.fourth.visited = true;
+					System.out.println("Assigned Four");
 				}
 				break;
 
@@ -232,7 +249,8 @@ public class DriveNextPath implements Behavior{
 			}
 				 
 
-		}else if((lastCell.x -1) >= 0 ) {
+		}
+		if((lastCell.x -1) >= 0 ) {
 			ArrayList<Cell> aux =(ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y][lastCell.x - 1]);
 			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
@@ -244,7 +262,8 @@ public class DriveNextPath implements Behavior{
 			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
 				frontier.add(aux);  
 
-		}else if((lastCell.y -1) >= 0) {
+		}
+		if((lastCell.y -1) >= 0) {
 			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y - 1][lastCell.x]);
 			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )

@@ -70,7 +70,8 @@ public class PilotRobot {
 		setPose();
 		// Reset the value of the gyroscope to zero
     	initializeMap();
-    	
+		getPilot().setLinearAcceleration(10);
+		getPilot().setLinearAcceleration(getPilot().getLinearAcceleration()/3 * 2);
 		gSensor.reset();
 	}
 	
@@ -115,10 +116,15 @@ public class PilotRobot {
 	}
 	
 	public int getDirectionHeading() {
+		int side;
 		if(getAngle()>360)
-			return (int) ((getAngle()%360)/90);
+			side = Math.round(((getAngle()%360)/90));
 		else
-			return Math.round(getAngle()/90);
+			side = Math.round(getAngle()/90);
+		if(side == 4 || side == -1) {
+			side = 0;
+		}
+		return side;
 	}
 	
 	public MovePilot getPilot() {
@@ -139,7 +145,10 @@ public class PilotRobot {
 		pilot.rotate(angle);
 		adjustPosition(angle);
     }
-    
+    public void run(float distance) {
+    	getPilot().travel(distance);
+    	getPilot().stop();
+    }
     public void setPose() {
     	myPose = opp.getPose();
     }
