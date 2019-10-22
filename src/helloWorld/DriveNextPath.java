@@ -83,7 +83,13 @@ public class DriveNextPath implements Behavior{
 
 			default:
 				System.out.println("No where to go");
-				break;
+				if(!me.didEntireCircuit) {
+					me.didEntireCircuit = true;
+					return me.searchTree.first;
+				}
+				else {
+					return null;
+				}
 			}
 
 		}
@@ -99,23 +105,16 @@ public class DriveNextPath implements Behavior{
 		Delay.msDelay(1000);
 		for(int i =0; i < path.size();i++) {
 			Cell nextCell = path.get(i);
+			boolean stop = false;
 			if(nextCell.x != me.stateCell.x) {
-				TravelToCell("x", nextCell);
+				stop = TravelToCell("x", nextCell, goalCell);
 			}
 			if(nextCell.y != me.stateCell.y) {
-				//Rotate to desired location
-				TravelToCell("y", nextCell);
+				stop = TravelToCell("y", nextCell, goalCell);
 			}
-			
-			if(me.getDistance() < 0.08 && me.stateCell.y != 0 && me.stateCell.y != 6 && me.stateCell.x != 0 && me.stateCell.x != 5) {
-				me.assiningObstacle();
-				if(nextCell.x == goalCell.x && nextCell.y == goalCell.y ) {
-					assignVisited(nextCell);
-					goalCell = nextPath();
-				}
-				goToNextPath(goalCell);
+			if(stop)
 				break;
-			}
+			
 		}
 		
 		assignVisited(me.stateCell);
@@ -124,7 +123,7 @@ public class DriveNextPath implements Behavior{
 			goToNextPath(nextCell);
 	}
 	
-	public void TravelToCell(String axis, Cell nextCell) {
+	public boolean TravelToCell(String axis, Cell nextCell, Cell goalCell) {
 		int side = me.getDirectionHeading();
 		
 		if(axis.equals("x")) {
@@ -137,7 +136,10 @@ public class DriveNextPath implements Behavior{
 					AdjustMyPosition(3, side);
 			}
 			float angleBefore = me.getAngle();
-			me.run(25);
+			boolean returned = checkForObstacles(nextCell, goalCell);
+			if(returned)
+				return true;
+			me.run(24);
 			AdjustMyAngle(angleBefore);
 			me.stateCell.x = nextCell.x;
 		}
@@ -151,15 +153,34 @@ public class DriveNextPath implements Behavior{
 					AdjustMyPosition(2, side);
 			}
 			float angleBefore = me.getAngle();
-			me.run(25);
+			boolean returned = checkForObstacles(nextCell, goalCell);
+			if(returned)
+				return true;
+			me.run(24);
 			AdjustMyAngle(angleBefore);
 			me.stateCell.y = nextCell.y;
 		}
+		return false;
 	}
+	
+	public boolean checkForObstacles(Cell nextCell, Cell goalCell) {
+		if(me.getDistance() < 0.08 && me.stateCell.y != 0 && me.stateCell.y != 6 && me.stateCell.x != 0 && me.stateCell.x != 5) {
+			me.assiningObstacle();
+			if(nextCell.x == goalCell.x && nextCell.y == goalCell.y ) {
+				assignVisited(nextCell);
+				goalCell = nextPath();
+			}
+			goToNextPath(goalCell);
+			return true;
+		}
+		return false;
+	}
+	
 	public void AdjustMyAngle(float angle) {
 		float diff = angle - me.getAngle();
 		me.turnMotors(diff);
 	}
+	
 	public void AdjustMyPosition(int desired, int now) {
 		Delay.msDelay(1000);
 		while(now != desired) {
@@ -247,7 +268,7 @@ public class DriveNextPath implements Behavior{
 			{
 				frontier.add(aux); 
 			}
-				 
+
 
 		}
 		if((lastCell.x -1) >= 0 ) {
@@ -255,12 +276,14 @@ public class DriveNextPath implements Behavior{
 			aux.add(sucessors[lastCell.y][lastCell.x - 1]);
 			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
 				frontier.add(aux);  
+
 		}
 		if((lastCell.y + 1) <= 6) {
 			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
 			aux.add(sucessors[lastCell.y + 1 ][lastCell.x]);
 			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
-				frontier.add(aux);  
+				frontier.add(aux);
+
 
 		}
 		if((lastCell.y -1) >= 0) {
@@ -270,6 +293,7 @@ public class DriveNextPath implements Behavior{
 			{
 				frontier.add(aux); 
 			}
+
 		}
 		
 	}

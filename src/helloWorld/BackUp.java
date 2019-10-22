@@ -61,8 +61,9 @@ public class BackUp implements Behavior {
 		// complete (i.e. the robot stops) or if suppressed is true.  Note
 	    // that we can check suppressed to see if it is even worth doing.
 	    // There are more elegant ways of doing this!!!
-	    if (!suppressed)
+	    if (!suppressed) {
 	    	me.assiningObstacle();
+	    }
 	    while(pilot.isMoving() && !suppressed) {
 	        Thread.yield();  // wait till turn is complete or suppressed is called
 	    }

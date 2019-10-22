@@ -36,6 +36,7 @@ public class PilotRobot {
 	Paths searchTree = new Paths();
 	Cell map[][] = null;
 	Cell stateCell = new Cell(0,0);
+	boolean didEntireCircuit;
 	
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
@@ -93,7 +94,7 @@ public class PilotRobot {
 	}
 	
 	public boolean isTooCloseUS() {
-		if(getDistance() <0.08) {
+		if(getDistance() < 0.08) {
 			return true;
 		}
 		else {
@@ -147,7 +148,6 @@ public class PilotRobot {
     }
     public void run(float distance) {
     	getPilot().travel(distance);
-    	getPilot().stop();
     }
     public void setPose() {
     	myPose = opp.getPose();
@@ -173,25 +173,25 @@ public class PilotRobot {
 		int side = getDirectionHeading();
 		switch (side) {
 		case 0: // Facing the initial position
-			if(getDistance() < 0.08 && (stateCell.y) != 7) {
-				map[stateCell.x][stateCell.y].obstacle = true;
+			if(getDistance() < 0.08 && (stateCell.y) != 6) {
+				map[stateCell.y + 1][stateCell.x].obstacle = true;
 			}
 			break;
 		case 1: // Turned to the right from the initial position
-			if(getDistance() < 0.08 &&(stateCell.x) != 06) {
-				map[stateCell.x][stateCell.y].obstacle = true;
+			if(getDistance() < 0.08 &&(stateCell.x) != 5) {
+				map[stateCell.y][stateCell.x + 1].obstacle = true;
 			}
 			break;
 			
 		case 2: // Turned 180 from the initial position
 			if(getDistance() < 0.08 && (stateCell.y) != 0 ) {
-				map[stateCell.x][stateCell.y].obstacle = true;
+				map[stateCell.y - 1][stateCell.x].obstacle = true;
 			}
 			break;
 			
 		case 3: // Turned to the left from the initial position
 			if(getDistance() < 0.08 && (stateCell.x) != 0 ) {
-				map[stateCell.x][stateCell.y].obstacle = true;
+				map[stateCell.y][stateCell.x - 1].obstacle = true;
 			}
 			break;
 		default:
