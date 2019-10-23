@@ -14,12 +14,11 @@ public class Map {
 	public void fillMap(PilotRobot me) {
 		int cellSideSize = 18;
 		GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
-		//lcd.drawRect(x, y, width, height);
 		for(int j = 0; j< 7; j ++) {
 			for(int i=0;i<6;i++) {
-				lcd.drawRect(cellSideSize*i, cellSideSize*j, cellSideSize, cellSideSize);
-				if(robot.map[j][i].obstacle) {
-					lcd.drawRoundRect(cellSideSize*i -2, cellSideSize*j -2,cellSideSize -2, cellSideSize -2, 2, 2);
+				lcd.drawRect(cellSideSize*(i), cellSideSize*(6-j), cellSideSize, cellSideSize);
+				if(robot.map[j+1][i+1].obstacle) {
+					lcd.drawRoundRect(cellSideSize*(i) -2, cellSideSize*(6-j) -2,cellSideSize, cellSideSize, 2, 2);
 				}
 			}
 		lcd.setFont(Font.getSmallFont());

@@ -12,11 +12,16 @@ public class DriveNextPath implements Behavior{
 	public boolean suppressed;
 	private PilotRobot me;
 	Cell map[][];
+	Cell goalCell;
+	List<Cell> path;
+	boolean stop;
+	public aStar aStar;
 	// Constructor - store a reference to the robot
 	public DriveNextPath(PilotRobot robot){
     	 me = robot;
     	 map = me.map;
-    }
+    	 aStar = new aStar(me);
+   }
 
 	// When called, this should stop action()
 	public void suppress(){
@@ -40,12 +45,7 @@ public class DriveNextPath implements Behavior{
 		// Allow this method to run
 		suppressed = false;
 		
-		Cell nextCell = nextPath();
-		
-		if(!(nextCell == null)) {
-			// Go forward
-			goToNextPath(nextCell);
-		}
+		goToNextPath();
 		// While we can run, yield the thread to let other threads run.
 		// It is important that no action function blocks any otherf action.
 		while (!suppressed) {
@@ -57,8 +57,8 @@ public class DriveNextPath implements Behavior{
 		me.setPose();
 	}
 	
-	public Cell nextPath() { 
-		for(int i =0; i < 4; i++) {
+	public Cell nextPath() {
+		for(int i =0; i < 5; i++) {
 			switch (i) {
 			case 0:
 				if(!me.searchTree.first.visited) {
@@ -80,50 +80,51 @@ public class DriveNextPath implements Behavior{
 					return me.searchTree.fourth;
 				}
 				break;
-
+			case 4:
+				if(!me.searchTree.five.visited) {
+					return me.searchTree.five;
+				}
+				break;
 			default:
-				System.out.println("No where to go");
-				if(!me.didEntireCircuit) {
-					me.didEntireCircuit = true;
-					return me.searchTree.first;
-				}
-				else {
-					return null;
-				}
+				return null;
 			}
 
 		}
 		return null;
 	}
 
-	public void goToNextPath(Cell goalCell) {
-		List<Cell> path = (ArrayList<Cell>) AStar(me.map, goalCell, me.stateCell);
-		for(int i =0; i < path.size();i++) {
-			Cell nextCell = path.get(i);
-			System.out.println(nextCell.y + ";" + nextCell.x);
-		}
-		Delay.msDelay(1000);
-		for(int i =0; i < path.size();i++) {
-			Cell nextCell = path.get(i);
-			boolean stop = false;
-			if(nextCell.x != me.stateCell.x) {
-				stop = TravelToCell("x", nextCell, goalCell);
-			}
-			if(nextCell.y != me.stateCell.y) {
-				stop = TravelToCell("y", nextCell, goalCell);
-			}
-			if(stop)
-				break;
+	public void goToNextPath() {
+		goalCell = nextPath();
+		while(goalCell != null) {
+			path = (ArrayList<Cell>) helloWorld.aStar.AStar(me.map, me.stateCell, goalCell);
 			
+			for(int i =0; i < path.size();i++) {
+				Cell nextCell = path.get(i);
+				System.out.println(nextCell.y + "," + nextCell.x);
+			}
+			
+			for(int i =0; i < path.size();i++) {
+				Cell nextCell = path.get(i);
+				if(nextCell.x != me.stateCell.x) {
+					TravelToCell("x", nextCell, goalCell);
+				}
+				if(nextCell.y != me.stateCell.y) {
+					TravelToCell("y", nextCell, goalCell);
+				}
+				if(stop) {
+					System.out.println("Breaking");
+					stop = false;
+					break;
+				}
+			}
+			assignVisited(me.stateCell);
+			goalCell = nextPath();
+			System.out.println("Initial place" + me.map[1][1].obstacle);
 		}
 		
-		assignVisited(me.stateCell);
-		Cell nextCell = nextPath();
-		if(nextCell != null)
-			goToNextPath(nextCell);
 	}
 	
-	public boolean TravelToCell(String axis, Cell nextCell, Cell goalCell) {
+	public void TravelToCell(String axis, Cell nextCell, Cell goalCell) {
 		int side = me.getDirectionHeading();
 		
 		if(axis.equals("x")) {
@@ -135,12 +136,11 @@ public class DriveNextPath implements Behavior{
 				if(side != 3)
 					AdjustMyPosition(3, side);
 			}
-			float angleBefore = me.getAngle();
 			boolean returned = checkForObstacles(nextCell, goalCell);
+			System.out.println(returned);
 			if(returned)
-				return true;
-			me.run(24);
-			AdjustMyAngle(angleBefore);
+				return;
+			me.run(25);
 			me.stateCell.x = nextCell.x;
 		}
 		else {
@@ -152,40 +152,35 @@ public class DriveNextPath implements Behavior{
 				if(side != 2)
 					AdjustMyPosition(2, side);
 			}
-			float angleBefore = me.getAngle();
+
 			boolean returned = checkForObstacles(nextCell, goalCell);
+			System.out.println(returned);
 			if(returned)
-				return true;
-			me.run(24);
-			AdjustMyAngle(angleBefore);
+				return;
+			me.run(25);
 			me.stateCell.y = nextCell.y;
 		}
-		return false;
 	}
 	
 	public boolean checkForObstacles(Cell nextCell, Cell goalCell) {
-		if(me.getDistance() < 0.08 && me.stateCell.y != 0 && me.stateCell.y != 6 && me.stateCell.x != 0 && me.stateCell.x != 5) {
+		if(me.getDistance() < 0.08) {
 			me.assiningObstacle();
 			if(nextCell.x == goalCell.x && nextCell.y == goalCell.y ) {
-				assignVisited(nextCell);
-				goalCell = nextPath();
+				assignVisited(goalCell);
+//				goalCell = nextPath();
+//				if(goalCell != null) {
+//					stop = true;
+//				}
 			}
-			goToNextPath(goalCell);
+			stop = true;
 			return true;
 		}
 		return false;
 	}
 	
-	public void AdjustMyAngle(float angle) {
-		float diff = angle - me.getAngle();
-		me.turnMotors(diff);
-	}
-	
 	public void AdjustMyPosition(int desired, int now) {
-		Delay.msDelay(1000);
+		Delay.msDelay(500);
 		while(now != desired) {
-			System.out.println("Desired: " + desired);
-			System.out.println(" Now: " + now);
 			me.turnMotors(90);
 			now = me.getDirectionHeading();
 
@@ -193,33 +188,33 @@ public class DriveNextPath implements Behavior{
 	}
 	
 	public void assignVisited(Cell cell) {
-		for(int i =0; i < 4; i++) {
+		for(int i =0; i < 5; i++) {
 			switch (i) {
 			case 0:
 				if(cell.x == me.searchTree.first.x && cell.y == me.searchTree.first.y ) {
 					me.searchTree.first.visited = true;
-					System.out.println("Assigned One");
 				}
 				break;
 			case 1:
 				if(cell.x == me.searchTree.second.x && cell.y == me.searchTree.second.y ) {
 					me.searchTree.second.visited = true;
-					System.out.println("Assigned Two");
 				}
 				break;
 			case 2:
 				if(cell.x == me.searchTree.third.x && cell.y == me.searchTree.third.y ) {
 					me.searchTree.third.visited = true;
-					System.out.println("Assigned Three");
 				}
 				break;
 			case 3:
 				if(cell.x == me.searchTree.fourth.x && cell.y == me.searchTree.fourth.y ) {
 					me.searchTree.fourth.visited = true;
-					System.out.println("Assigned Four");
 				}
 				break;
-
+			case 4:
+				if(cell.x == me.searchTree.five.x && cell.y == me.searchTree.five.y ) {
+					me.searchTree.five.visited = true;
+				}
+				break;
 			default:
 				break;
 			}
@@ -227,94 +222,5 @@ public class DriveNextPath implements Behavior{
 		}
 	}
 	
-	public List<Cell> AStar(Cell sucessors[][], Cell goal, Cell state) {
-		ArrayList<ArrayList<Cell>> frontier = new ArrayList<>();
-		frontier.add(new ArrayList<Cell>());
-		frontier.get(0).add(state);
-		while(frontier.size() > 0) {
-			int index = cost(frontier, goal);
-			ArrayList<Cell> lowerCost = frontier.get(index);
-			frontier.remove(index);
-			if(lowerCost.get(lowerCost.size()-1).x == goal.x && lowerCost.get(lowerCost.size()-1).y == goal.y) {
-				return lowerCost;
-			}
-			else {
-				AddingSucessors(frontier, lowerCost, me.map, goal);
-			}
-		}
-		return null;
-	}
-	
-	public int cost(ArrayList<ArrayList<Cell>> frontier, Cell goal) {
-		int min = 0;
-		int auxIndex = 0;
-		for(int i = 0;i < frontier.size(); i++ ) {
-			Cell lastCellOfPath = frontier.get(i).get(frontier.get(i).size() - 1);
-			int g = lastCellOfPath.x + lastCellOfPath.y;
-			int h = (goal.x -  lastCellOfPath.x) +  (goal.y -lastCellOfPath.y);
-			if( g+h < min){
-				min = g+h;
-				auxIndex = i;
-			}
-		}
-		return auxIndex;
-	}
-	public void AddingSucessors(ArrayList<ArrayList<Cell>> frontier, ArrayList<Cell> lowerCost, Cell sucessors[][], Cell goal) {
-		Cell lastCell = lowerCost.get(lowerCost.size() - 1);
-		if((lastCell.x + 1) <= 5) {
-			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
-			aux.add(sucessors[lastCell.y][lastCell.x + 1]);
-			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
-			{
-				frontier.add(aux); 
-			}
 
-
-		}
-		if((lastCell.x -1) >= 0 ) {
-			ArrayList<Cell> aux =(ArrayList<Cell>) lowerCost.clone();
-			aux.add(sucessors[lastCell.y][lastCell.x - 1]);
-			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
-				frontier.add(aux);  
-
-		}
-		if((lastCell.y + 1) <= 6) {
-			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
-			aux.add(sucessors[lastCell.y + 1 ][lastCell.x]);
-			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
-				frontier.add(aux);
-
-
-		}
-		if((lastCell.y -1) >= 0) {
-			ArrayList<Cell> aux = (ArrayList<Cell>) lowerCost.clone();
-			aux.add(sucessors[lastCell.y - 1][lastCell.x]);
-			if(!me.map[(aux.get(aux.size()-1).y)][(aux.get(aux.size()-1).x)].obstacle || checkIfIsGoal(goal, (aux.get(aux.size()-1))) )
-			{
-				frontier.add(aux); 
-			}
-
-		}
-		
-	}
-	
-	public boolean checkIfIsGoal(Cell goal, Cell test) {
-		if(goal.x == test.x && goal.y == test.y) {
-			return true;
-		}
-		return false;
-	}
-	
-	public ArrayList<ArrayList<Cell>> removeElement(ArrayList<ArrayList<Cell>> frontier, List<Cell> lowerCost) {
-        for(int i = 0; i < frontier.size(); i++){
-            if(frontier.get(i) == lowerCost){
-                // shifting elements
-                for(int j = i; j < frontier.size() - 1; j++){
-                	frontier.set(j, frontier.get(j+1));
-                }
-                break;
-            }
-        }
-        return frontier;
-	}
 }

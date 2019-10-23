@@ -35,8 +35,7 @@ public class PilotRobot {
 	Pose myPose;
 	Paths searchTree = new Paths();
 	Cell map[][] = null;
-	Cell stateCell = new Cell(0,0);
-	boolean didEntireCircuit;
+	Cell stateCell = new Cell(1,1);
 	
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
@@ -61,8 +60,8 @@ public class PilotRobot {
 		// The offset number is the distance between the centre
 		// of wheel to the centre of robot (4.9 cm)
 		// NOTE: this may require some trial and error to get right!!!
-		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.05).offset(-4.9);
-		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.05).offset(4.9);
+		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.15).offset(-5.3);
+		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.25).offset(5.3);
 		
 		Chassis myChassis = new WheeledChassis( new Wheel[]{leftWheel, rightWheel}, WheeledChassis.TYPE_DIFFERENTIAL);
 
@@ -147,7 +146,10 @@ public class PilotRobot {
 		adjustPosition(angle);
     }
     public void run(float distance) {
+		float angleBefore = getAngle();
     	getPilot().travel(distance);
+		float diff = angleBefore - getAngle();
+		pilot.rotate(diff);
     }
     public void setPose() {
     	myPose = opp.getPose();
@@ -158,39 +160,39 @@ public class PilotRobot {
     }
     
     private void initializeMap() {
-    	this.map = new Cell[7][6];
-    	for(int i = 0;i<7;i++) {
-    		for(int j = 0;j<6;j++) {
-    			this.map[i][j] = new Cell(0,0);
+    	this.map = new Cell[8][7];
+    	for(int i = 1;i<8;i++) {
+    		for(int j = 1;j<7;j++) {
+    			this.map[i][j] = new Cell(1,1);
     			this.map[i][j].x = j;
     			this.map[i][j].y = i;
         	}
     	}
-    	stateCell = this.map[0][0];
+    	stateCell = this.map[1][1];
     }
     
     public void assiningObstacle() {
 		int side = getDirectionHeading();
 		switch (side) {
 		case 0: // Facing the initial position
-			if(getDistance() < 0.08 && (stateCell.y) != 6) {
+			if(getDistance() < 0.08 && (stateCell.x) != 6) {
 				map[stateCell.y + 1][stateCell.x].obstacle = true;
 			}
 			break;
 		case 1: // Turned to the right from the initial position
-			if(getDistance() < 0.08 &&(stateCell.x) != 5) {
+			if(getDistance() < 0.08 &&(stateCell.y) != 7) {
 				map[stateCell.y][stateCell.x + 1].obstacle = true;
 			}
 			break;
 			
 		case 2: // Turned 180 from the initial position
-			if(getDistance() < 0.08 && (stateCell.y) != 0 ) {
+			if(getDistance() < 0.08 && (stateCell.x) != 1 ) {
 				map[stateCell.y - 1][stateCell.x].obstacle = true;
 			}
 			break;
 			
 		case 3: // Turned to the left from the initial position
-			if(getDistance() < 0.08 && (stateCell.x) != 0 ) {
+			if(getDistance() < 0.08 && (stateCell.y) != 1 ) {
 				map[stateCell.y][stateCell.x - 1].obstacle = true;
 			}
 			break;

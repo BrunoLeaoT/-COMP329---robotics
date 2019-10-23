@@ -33,10 +33,8 @@ public class BackUp implements Behavior {
 	
 	// When called, determine if this behaviour should start
 	public boolean takeControl(){
-		if (me.isLeftBumpPressed() || me.isRightBumpPressed() || me.isTooCloseUS()) {
-			return true;
-		}
-		return false;
+		return (me.isLeftBumpPressed() || me.isRightBumpPressed() || me.isTooCloseUS());
+
 	}
 
 	// This is our action function.  All calls to the motors should be
@@ -52,7 +50,10 @@ public class BackUp implements Behavior {
 		
 		// Reverse for 20cm, and have the thread yield until this is
 		// complete (i.e. the robot stops) or if suppressed is true.
-		pilot.travel(-2, true);
+		
+		if (me.isLeftBumpPressed() || me.isRightBumpPressed())
+			pilot.travel(-2, true);
+		me.assiningObstacle();
 	    while(pilot.isMoving() && !suppressed) {
 	        Thread.yield();  // wait till turn is complete or suppressed is called
 	    }
