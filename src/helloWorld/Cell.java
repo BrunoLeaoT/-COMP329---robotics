@@ -5,11 +5,15 @@ class Cell{
 	int y;
 	boolean visited;
 	boolean obstacle;
+	float probabilityEmpty;
+	float probabilityOccupied;
 	public Cell(int y ,int x) {
 		this.x = x;
 		this.y = y ;
 		visited = false;
 		obstacle = false;
+		probabilityEmpty = (float) 0.5;
+		probabilityOccupied = (float) 0.5;
 	}
 	
 	public void setVisited(boolean state) {

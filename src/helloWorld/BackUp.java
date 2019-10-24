@@ -65,6 +65,7 @@ public class BackUp implements Behavior {
 	    if (!suppressed) {
 	    	me.assiningObstacle();
 	    }
+	    
 	    while(pilot.isMoving() && !suppressed) {
 	        Thread.yield();  // wait till turn is complete or suppressed is called
 	    }

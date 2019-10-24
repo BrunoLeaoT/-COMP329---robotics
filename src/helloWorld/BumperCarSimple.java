@@ -21,7 +21,7 @@ public class BumperCarSimple {
 		Behavior b1 = new DriveNextPath(me);
 		Behavior b2 = new BackUp(me);
 		Behavior b3 = new Escape(me);
-		Behavior [] bArray = {b3, b1, b2};
+		Behavior [] bArray = {b1, b2, b3};
 		Arbitrator arby = new Arbitrator(bArray);
 
 		// Note that in the Arbritrator constructor, a message is sent

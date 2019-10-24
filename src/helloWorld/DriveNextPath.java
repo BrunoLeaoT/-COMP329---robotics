@@ -97,12 +97,13 @@ public class DriveNextPath implements Behavior{
 		goalCell = nextPath();
 		while(goalCell != null) {
 			path = (ArrayList<Cell>) helloWorld.aStar.AStar(me.map, me.stateCell, goalCell);
-			
-			for(int i =0; i < path.size();i++) {
-				Cell nextCell = path.get(i);
-				System.out.println(nextCell.y + "," + nextCell.x);
-			}
-			
+	
+//			for(int i =0; i < path.size();i++) {
+//				Cell nextCell = path.get(i);
+//				System.out.println(nextCell.y + "," + nextCell.x);
+//			}
+//			
+			// supressed = false;
 			for(int i =0; i < path.size();i++) {
 				Cell nextCell = path.get(i);
 				if(nextCell.x != me.stateCell.x) {
@@ -141,6 +142,9 @@ public class DriveNextPath implements Behavior{
 			if(returned)
 				return;
 			me.run(25);
+			while (!suppressed) {
+				Thread.yield();
+			}
 			me.stateCell.x = nextCell.x;
 		}
 		else {
@@ -158,6 +162,9 @@ public class DriveNextPath implements Behavior{
 			if(returned)
 				return;
 			me.run(25);
+			while (!suppressed) {
+				Thread.yield();
+			}
 			me.stateCell.y = nextCell.y;
 		}
 	}
@@ -183,7 +190,9 @@ public class DriveNextPath implements Behavior{
 		while(now != desired) {
 			me.turnMotors(90);
 			now = me.getDirectionHeading();
-
+			while (!suppressed) {
+				Thread.yield();
+			}
 		}
 	}
 	
