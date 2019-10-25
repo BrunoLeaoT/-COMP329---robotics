@@ -1,4 +1,3 @@
-package helloWorld;
 
 class Cell{
 	int x;

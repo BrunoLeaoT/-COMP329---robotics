@@ -1,4 +1,3 @@
-package helloWorld;
 import lejos.hardware.Brick;
 import lejos.hardware.BrickFinder;
 import lejos.hardware.motor.Motor;
@@ -36,6 +35,7 @@ public class PilotRobot {
 	Paths searchTree = new Paths();
 	Cell map[][] = null;
 	Cell stateCell = new Cell(1,1);
+	Probability probModel = new Probability(this);
 	
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
@@ -60,8 +60,8 @@ public class PilotRobot {
 		// The offset number is the distance between the centre
 		// of wheel to the centre of robot (4.9 cm)
 		// NOTE: this may require some trial and error to get right!!!
-		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.15).offset(-5.3);
-		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.25).offset(5.3);
+		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.225).offset(-5.3);
+		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.225).offset(5.3);
 		
 		Chassis myChassis = new WheeledChassis( new Wheel[]{leftWheel, rightWheel}, WheeledChassis.TYPE_DIFFERENTIAL);
 
@@ -80,6 +80,7 @@ public class PilotRobot {
 		rightBump.close();
 		usSensor.close();
 		gSensor.close();
+		
 	}
 
 	public boolean isLeftBumpPressed() {
@@ -144,12 +145,14 @@ public class PilotRobot {
     	pilot.setAngularAcceleration(70);
 		pilot.rotate(angle);
 		adjustPosition(angle);
+		probModel.probabilisticModel(getDistance());
     }
     public void run(float distance) {
 		float angleBefore = getAngle();
     	getPilot().travel(distance);
 		float diff = angleBefore - getAngle();
 		pilot.rotate(diff);
+		probModel.probabilisticModel(getDistance());
     }
     public void setPose() {
     	myPose = opp.getPose();

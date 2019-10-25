@@ -1,4 +1,4 @@
-package helloWorld;
+import java.text.DecimalFormat;
 
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.Font;
@@ -14,9 +14,12 @@ public class Map {
 	public void fillMap(PilotRobot me) {
 		int cellSideSize = 18;
 		GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
+		lcd.setFont(Font.getSmallFont());
+    	DecimalFormat df = new DecimalFormat("#.##");  
 		for(int j = 0; j< 7; j ++) {
 			for(int i=0;i<6;i++) {
 				lcd.drawRect(cellSideSize*(i), cellSideSize*(6-j), cellSideSize, cellSideSize);
+				lcd.drawString(""+df.format(robot.map[j+1][i+1].probabilityOccupied ), cellSideSize*(i), cellSideSize*(6-j), 0);
 				if(robot.map[j+1][i+1].obstacle) {
 					lcd.drawRoundRect(cellSideSize*(i) -2, cellSideSize*(6-j) -2,cellSideSize, cellSideSize, 2, 2);
 				}

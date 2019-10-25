@@ -1,10 +1,7 @@
-package helloWorld;
-
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import helloWorld.Cell;
 import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
 
@@ -96,7 +93,7 @@ public class DriveNextPath implements Behavior{
 	public void goToNextPath() {
 		goalCell = nextPath();
 		while(goalCell != null) {
-			path = (ArrayList<Cell>) helloWorld.aStar.AStar(me.map, me.stateCell, goalCell);
+			path = (ArrayList<Cell>) aStar.AStar(me.map, me.stateCell, goalCell);
 	
 //			for(int i =0; i < path.size();i++) {
 //				Cell nextCell = path.get(i);
@@ -113,16 +110,13 @@ public class DriveNextPath implements Behavior{
 					TravelToCell("y", nextCell, goalCell);
 				}
 				if(stop) {
-					System.out.println("Breaking");
 					stop = false;
 					break;
 				}
 			}
 			assignVisited(me.stateCell);
 			goalCell = nextPath();
-			System.out.println("Initial place" + me.map[1][1].obstacle);
 		}
-		
 	}
 	
 	public void TravelToCell(String axis, Cell nextCell, Cell goalCell) {
@@ -138,10 +132,9 @@ public class DriveNextPath implements Behavior{
 					AdjustMyPosition(3, side);
 			}
 			boolean returned = checkForObstacles(nextCell, goalCell);
-			System.out.println(returned);
 			if(returned)
 				return;
-			me.run(25);
+			me.run((float) 25.5);
 			while (!suppressed) {
 				Thread.yield();
 			}
@@ -158,10 +151,9 @@ public class DriveNextPath implements Behavior{
 			}
 
 			boolean returned = checkForObstacles(nextCell, goalCell);
-			System.out.println(returned);
 			if(returned)
 				return;
-			me.run(25);
+			me.run((float) 25.5);
 			while (!suppressed) {
 				Thread.yield();
 			}
@@ -174,10 +166,6 @@ public class DriveNextPath implements Behavior{
 			me.assiningObstacle();
 			if(nextCell.x == goalCell.x && nextCell.y == goalCell.y ) {
 				assignVisited(goalCell);
-//				goalCell = nextPath();
-//				if(goalCell != null) {
-//					stop = true;
-//				}
 			}
 			stop = true;
 			return true;

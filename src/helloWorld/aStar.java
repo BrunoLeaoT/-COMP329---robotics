@@ -1,5 +1,3 @@
-package helloWorld;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,7 @@ public class aStar {
 	public aStar(PilotRobot robot){
     	 me = robot;
     }
-	public static List<Cell> AStar(Cell sucessors[][], Cell state, Cell goal ) {
+	public List<Cell> AStar(Cell sucessors[][], Cell state, Cell goal ) {
 		ArrayList<ArrayList<Cell>> frontier = new ArrayList<>();
 		map = sucessors;
 		frontier.add(new ArrayList<Cell>());

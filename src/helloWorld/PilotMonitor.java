@@ -1,4 +1,3 @@
-package helloWorld;
 import java.text.DecimalFormat;
 
 import lejos.hardware.ev3.LocalEV3;

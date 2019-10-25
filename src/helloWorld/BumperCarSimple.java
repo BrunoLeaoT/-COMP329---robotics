@@ -6,7 +6,6 @@
 // Terry Payne
 // 1st October 2018
 //
-package helloWorld;
 import lejos.hardware.Button;
 import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;

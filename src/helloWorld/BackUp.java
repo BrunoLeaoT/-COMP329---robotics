@@ -9,7 +9,6 @@
 // Terry Payne
 // 1st October 2018
 //
-package helloWorld;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
 

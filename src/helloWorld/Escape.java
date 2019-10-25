@@ -1,5 +1,3 @@
-package helloWorld;
-
 import lejos.hardware.Button;
 import lejos.robotics.navigation.MovePilot;
 import lejos.robotics.subsumption.Behavior;
