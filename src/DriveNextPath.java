@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import lejos.robotics.subsumption.Behavior;
 import lejos.utility.Delay;
-
+import lejos.hardware.Sound;
 public class DriveNextPath implements Behavior{
 	public boolean suppressed;
 	private PilotRobot me;
@@ -45,9 +45,9 @@ public class DriveNextPath implements Behavior{
 		goToNextPath();
 		// While we can run, yield the thread to let other threads run.
 		// It is important that no action function blocks any otherf action.
-		while (!suppressed) {
-			Thread.yield();
-		}
+		//while (!suppressed) {
+		//	Thread.yield();
+		//}
 		
 	    // Ensure that the motors have stopped.
 		me.getPilot().stop();
@@ -117,6 +117,8 @@ public class DriveNextPath implements Behavior{
 			assignVisited(me.stateCell);
 			goalCell = nextPath();
 		}
+		me.finished = true;
+		Sound.beepSequence();
 	}
 	
 	public void TravelToCell(String axis, Cell nextCell, Cell goalCell) {
@@ -135,9 +137,9 @@ public class DriveNextPath implements Behavior{
 			if(returned)
 				return;
 			me.run((float) 25.5);
-			while (!suppressed) {
-				Thread.yield();
-			}
+			//while (!suppressed) {
+			//	Thread.yield();
+			//}
 			me.stateCell.x = nextCell.x;
 		}
 		else {
@@ -154,9 +156,9 @@ public class DriveNextPath implements Behavior{
 			if(returned)
 				return;
 			me.run((float) 25.5);
-			while (!suppressed) {
-				Thread.yield();
-			}
+			//while (!suppressed) {
+			//	Thread.yield();
+			//}
 			me.stateCell.y = nextCell.y;
 		}
 	}
@@ -178,9 +180,9 @@ public class DriveNextPath implements Behavior{
 		while(now != desired) {
 			me.turnMotors(90);
 			now = me.getDirectionHeading();
-			while (!suppressed) {
-				Thread.yield();
-			}
+			//while (!suppressed) {
+			//	Thread.yield();
+			//}
 		}
 	}
 	
@@ -218,6 +220,4 @@ public class DriveNextPath implements Behavior{
 
 		}
 	}
-	
-
 }

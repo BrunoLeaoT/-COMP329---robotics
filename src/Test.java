@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Test {
 	static Cell map[][] = null;
-	static Cell stateCell = new Cell(1,2);
+	static Cell stateCell = new Cell(1,1);
 	public static void main(String[] args) {
 		map  = initializeMap(map);
 		
@@ -28,18 +28,96 @@ public class Test {
 //			System.out.println("Cell: " + aux.y + ","+ aux.x);
 //		}
 		//adjustPosition(90);
-		float distance = (float) 0.8;
-		probabilisticModel(distance);
+		DecimalFormat df = new DecimalFormat("#.##");  
+		float distance = (float) 1.45;
+		probabilisticModel(distance,0);
     	for(int i = 7;i>0;i--) {
-    		System.out.println(map[i][1].probabilityOccupied +" - " + map[i][2].probabilityOccupied + " - " +map[i][3].probabilityOccupied +" - "+ map[i][4].probabilityOccupied +" - "+  map[i][5].probabilityOccupied +" - "+  map[i][6].probabilityOccupied);
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
     	}
-
-//    	stateCell = new Cell(3,4);
-//		distance = (float) 0.55;
-//		probabilisticModel(distance);
-//    	for(int i = 7;i>0;i--) {
-//    		System.out.println(map[i][1].probabilityOccupied +" - " + map[i][2].probabilityOccupied + " - " +map[i][3].probabilityOccupied +" - "+ map[i][4].probabilityOccupied +" - "+  map[i][5].probabilityOccupied +" - "+  map[i][6].probabilityOccupied);
-//    	}
+		distance = (float) 1.45;
+		probabilisticModel(distance,1);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	stateCell = new Cell(1,2);
+		distance = (float) 0.8;
+		probabilisticModel(distance,1);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+    	stateCell = new Cell(1,3);
+		distance = (float) 0.55;
+		probabilisticModel(distance,1);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+    	stateCell = new Cell(1,4);
+		distance = (float) 0.3;
+		probabilisticModel(distance,1);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+       	stateCell = new Cell(1,4);
+		distance = (float) 1.0;
+		probabilisticModel(distance,0);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+       	stateCell = new Cell(2,4);
+		distance = (float) 0.75;
+		probabilisticModel(distance,0);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+       	stateCell = new Cell(3,4);
+		distance = (float) 0.5;
+		probabilisticModel(distance,0);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+       	stateCell = new Cell(3,5);
+		distance = (float) 0.25;
+		probabilisticModel(distance,0);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+       	stateCell = new Cell(6,5);
+		distance = (float) 0.25;
+		probabilisticModel(distance,2);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+       	stateCell = new Cell(6,5);
+		distance = (float) 0.5;
+		probabilisticModel(distance,3);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+       	stateCell = new Cell(6,4);
+		distance = (float) 0.25;
+		probabilisticModel(distance,3);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+    	
+       	stateCell = new Cell(6,1);
+		distance = (float) 0.75;
+		probabilisticModel(distance,1);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
+       	stateCell = new Cell(6,1);
+		distance = (float) 1.2;
+		probabilisticModel(distance,2);
+    	for(int i = 7;i>0;i--) {
+    		System.out.println(df.format(map[i][1].probabilityOccupied) +" - " + df.format(map[i][2].probabilityOccupied) + " - " +df.format(map[i][3].probabilityOccupied) +" - "+ df.format(map[i][4].probabilityOccupied) +" - "+  df.format(map[i][5].probabilityOccupied) +" - "+  df.format(map[i][6].probabilityOccupied));
+    	}
    	}
 	
 	public static List<Cell> AStar(Cell sucessors[][], Cell state, Cell goal ) {
@@ -126,8 +204,8 @@ public class Test {
 	}
     public static Cell[][] initializeMap(Cell map [][]) {
     	map = new Cell[8][7];
-    	for(int i = 0;i<8;i++) {
-    		for(int j = 0;j<7;j++) {
+    	for(int i = 1;i<8;i++) {
+    		for(int j = 1;j<7;j++) {
     			map[i][j] = new Cell(1,1);
         		map[i][j].x = j;
         		map[i][j].y = i;
@@ -136,9 +214,9 @@ public class Test {
     	return map;
     }
     
-    public static void probabilisticModel(float distance) {
+    public static void probabilisticModel(float distance,int heading) {
     	// Understand heading
-    	int head = 0;
+    	int head = heading;
     	ArrayList<Cell> cellsToUpdate = new ArrayList<>();
     	int x,y;
     	System.out.println("Heading: " + head);
@@ -252,10 +330,10 @@ public class Test {
 	    		switch (head) {
 				case 0:
 					if(aux.y * 0.26 > (distance) && aux.y * 0.26 < (distance+0.3)) { // At the obstacle
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), true);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), true);
 					}
 					else if(aux.y * 0.26 < distance) {
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), false);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), false);
 					}
 					else {
 						// CHange to callnig bayesRUle with 0.5 0.5
@@ -264,10 +342,10 @@ public class Test {
 					break;
 				case 1:
 					if(aux.x * 0.26 > (distance) && aux.x * 0.26 < (distance+0.3)) { // At the obstacle
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), true);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), true);
 					}
 					else if(aux.y * 0.26 < distance) { // Before obstacle
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), false);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), false);
 					}
 					else {
 						bayesRule(aux, (float) 0.5,(float) 0.5);
@@ -275,10 +353,10 @@ public class Test {
 					break;
 				case 2:
 					if((state.y-aux.y) * 0.26 > (distance) && (state.y-aux.y) * 0.26 < (distance+0.3)) { // After the obstacle
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), true);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), true);
 					}
 					else if((state.y-aux.y) * 0.26 < distance) {
-						probEmptyAndOccupied(aux,distance, getAngle(aux, state), false);
+						probEmptyAndOccupied(aux,distance, getAngle(aux, state,head), false);
 					}
 					else {
 						bayesRule(aux, (float) 0.5,(float) 0.5);
@@ -287,11 +365,11 @@ public class Test {
 				case 3:
 					if((state.x-aux.x) * 0.26 > (distance) && (state.x-aux.x) * 0.26 < (distance+0.3)) { // At the obstacle
 						System.out.println("At :" + aux.y +  ":" + aux.x);
-						probEmptyAndOccupied(aux, distance, getAngle(aux, state), true);
+						probEmptyAndOccupied(aux, distance, getAngle(aux, state,head), true);
 					}
 					else if((state.x-aux.x)* 0.26 < distance) { // Before obstacle
 						System.out.println("Before: " + aux.y +  ":" + aux.x);
-						probEmptyAndOccupied(aux, distance, getAngle(aux, state), false);
+						probEmptyAndOccupied(aux, distance, getAngle(aux, state,head), false);
 					}
 					else {
 						bayesRule(aux, (float) 0.5,(float) 0.5);
@@ -304,9 +382,18 @@ public class Test {
     	}
     }
     
-    public static float getAngle(Cell target, Cell now) {
+    public static float getAngle(Cell target, Cell now, int head) {
     	System.out.println(target.y +"-"+ now.y +"-"+ target.x +"-"+ now.x);
-        double angle = Math.atan2((target.x - now.x), (target.y - now.y)) * 180 / Math.PI;
+        double angle = 0;// = Math.atan2((target.x - now.x), (target.y - now.y)) * 180 / Math.PI;
+        
+        if(!(target.x == now.x || target.y == now.y))
+        {
+        	if(head == 1 || head == 3)
+        		angle = Math.toDegrees(Math.atan2(Math.abs(target.y - now.y), Math.abs(target.x - now.x)));
+        	else
+        		angle = Math.toDegrees(Math.atan2( Math.abs(target.x - now.x),Math.abs(target.y - now.y)));
+        }
+        
         if (angle < 0) {
             return (float) (-1 * angle);
         } else {

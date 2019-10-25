@@ -15,23 +15,35 @@ public class Map {
 		int cellSideSize = 18;
 		GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
 		lcd.setFont(Font.getSmallFont());
-    	DecimalFormat df = new DecimalFormat("#.##");  
-		for(int j = 0; j< 7; j ++) {
-			for(int i=0;i<6;i++) {
-				lcd.drawRect(cellSideSize*(i), cellSideSize*(6-j), cellSideSize, cellSideSize);
-				lcd.drawString(""+df.format(robot.map[j+1][i+1].probabilityOccupied ), cellSideSize*(i), cellSideSize*(6-j), 0);
-				if(robot.map[j+1][i+1].obstacle) {
-					lcd.drawRoundRect(cellSideSize*(i) -2, cellSideSize*(6-j) -2,cellSideSize, cellSideSize, 2, 2);
+		if(me.finished == false) {
+			DecimalFormat df = new DecimalFormat("#.#");  
+				for(int j = 0; j< 7; j ++) {
+					for(int i=0;i<6;i++) {
+						lcd.drawRect(cellSideSize*(i), cellSideSize*(6-j), cellSideSize, cellSideSize);
+						lcd.drawString(""+df.format(robot.map[j+1][i+1].probabilityOccupied ), cellSideSize*(i), cellSideSize*(6-j), 0);
+						if(robot.map[j+1][i+1].obstacle) {
+							lcd.drawRoundRect(cellSideSize*(i) -2, cellSideSize*(6-j) -2,cellSideSize, cellSideSize, 2, 2);
+						}
+					}
+				lcd.setFont(Font.getSmallFont());
+				lcd.drawString("Position robot:", 120 , 0, 0);
+				
+				lcd.drawString("X: " + robot.getPose().getX() , 110, 20, 0);
+				lcd.drawString("Y: " + robot.getPose().getY() , 110, 40, 0);
+				lcd.drawString("H: " + robot.getDistance() , 110, 60, 0);
+				lcd.drawString("Cell:" + robot.stateCell.y + ","+  robot.stateCell.x, 110, 80, 0);
+		
+				}
+		}else {
+			DecimalFormat df = new DecimalFormat("#.##"); 
+			for(int j = 7; j > 0; j --) {
+				for(int i=6;i>0;i--) {
+					if(robot.map[j][i].obstacle) {
+						lcd.drawRoundRect(20*(i), 20*(j),20, 20, 2, 2);
+					}
+					lcd.drawString(""+df.format(robot.map[j][i].probabilityOccupied ), 20*(i), 20*(j), 0);
 				}
 			}
-		lcd.setFont(Font.getSmallFont());
-		lcd.drawString("Position robot:", 120 , 0, 0);
-		
-		lcd.drawString("X: " + robot.getPose().getX() , 110, 20, 0);
-		lcd.drawString("Y: " + robot.getPose().getY() , 110, 40, 0);
-		lcd.drawString("H: " + robot.getDistance() , 110, 60, 0);
-		lcd.drawString("Cell:" + robot.stateCell.y + ","+  robot.stateCell.x, 110, 80, 0);
-
 		}
 	}
 }
