@@ -34,12 +34,12 @@ public class Test {
     		System.out.println(map[i][1].probabilityOccupied +" - " + map[i][2].probabilityOccupied + " - " +map[i][3].probabilityOccupied +" - "+ map[i][4].probabilityOccupied +" - "+  map[i][5].probabilityOccupied +" - "+  map[i][6].probabilityOccupied);
     	}
 
-    	stateCell = new Cell(1,3);
-		distance = (float) 0.55;
-		probabilisticModel(distance);
-    	for(int i = 7;i>0;i--) {
-    		System.out.println(map[i][1].probabilityOccupied +" - " + map[i][2].probabilityOccupied + " - " +map[i][3].probabilityOccupied +" - "+ map[i][4].probabilityOccupied +" - "+  map[i][5].probabilityOccupied +" - "+  map[i][6].probabilityOccupied);
-    	}
+//    	stateCell = new Cell(3,4);
+//		distance = (float) 0.55;
+//		probabilisticModel(distance);
+//    	for(int i = 7;i>0;i--) {
+//    		System.out.println(map[i][1].probabilityOccupied +" - " + map[i][2].probabilityOccupied + " - " +map[i][3].probabilityOccupied +" - "+ map[i][4].probabilityOccupied +" - "+  map[i][5].probabilityOccupied +" - "+  map[i][6].probabilityOccupied);
+//    	}
    	}
 	
 	public static List<Cell> AStar(Cell sucessors[][], Cell state, Cell goal ) {

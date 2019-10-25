@@ -23,10 +23,11 @@ import lejos.robotics.navigation.Pose;
 
 
 public class PilotRobot {
+	private EV3TouchSensor leftBump, rightBump;	
 	private EV3UltrasonicSensor usSensor;
 	private EV3GyroSensor gSensor;
-	private SampleProvider distSP, gyroSP;	
-	private float[] distSample, angleSample; 
+	private SampleProvider leftSP, rightSP, distSP, gyroSP;	
+	private float[] leftSample, rightSample, distSample, angleSample; 
 	private MovePilot pilot;
 	double lastAngle = 0;
 	OdometryPoseProvider opp;
@@ -39,18 +40,18 @@ public class PilotRobot {
 	public PilotRobot() {
 		Brick myEV3 = BrickFinder.getDefault();
 
-		//leftBump = new EV3TouchSensor(myEV3.getPort("S1"));
-		//rightBump = new EV3TouchSensor(myEV3.getPort("S4"));
+		leftBump = new EV3TouchSensor(myEV3.getPort("S1"));
+		rightBump = new EV3TouchSensor(myEV3.getPort("S4"));
 		usSensor = new EV3UltrasonicSensor(myEV3.getPort("S3"));
 		gSensor = new EV3GyroSensor(myEV3.getPort("S2"));
 
-		//leftSP = leftBump.getTouchMode();
-		//rightSP = rightBump.getTouchMode();
+		leftSP = leftBump.getTouchMode();
+		rightSP = rightBump.getTouchMode();
 		distSP = usSensor.getDistanceMode();
 		gyroSP = gSensor.getAngleMode();
 		
-		//leftSample = new float[leftSP.sampleSize()];		// Size is 1
-		//rightSample = new float[rightSP.sampleSize()];		// Size is 1
+		leftSample = new float[leftSP.sampleSize()];		// Size is 1
+		rightSample = new float[rightSP.sampleSize()];		// Size is 1
 		distSample = new float[distSP.sampleSize()];		// Size is 1
 		angleSample = new float[gyroSP.sampleSize()];	// Size is 1
 
@@ -59,8 +60,8 @@ public class PilotRobot {
 		// The offset number is the distance between the centre
 		// of wheel to the centre of robot (4.9 cm)
 		// NOTE: this may require some trial and error to get right!!!
-		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.225).offset(-5.55); //motor 4.225 offset 5.3
-		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.225).offset(5.55); // 4.225 and 5.3
+		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 4.225).offset(-5.3);
+		Wheel rightWheel = WheeledChassis.modelWheel(Motor.D, 4.225).offset(5.3);
 		
 		Chassis myChassis = new WheeledChassis( new Wheel[]{leftWheel, rightWheel}, WheeledChassis.TYPE_DIFFERENTIAL);
 
@@ -75,11 +76,21 @@ public class PilotRobot {
 	}
 	
 	public void closeRobot() {
-		//leftBump.close();
-		//rightBump.close();
+		leftBump.close();
+		rightBump.close();
 		usSensor.close();
 		gSensor.close();
 		
+	}
+
+	public boolean isLeftBumpPressed() {
+    	leftSP.fetchSample(leftSample, 0);
+    	return (leftSample[0] == 1.0);
+	}
+	
+	public boolean isRightBumpPressed() {
+    	rightSP.fetchSample(rightSample, 0);
+    	return (rightSample[0] == 1.0);
 	}
 	
 	public boolean isTooCloseUS() {
@@ -91,9 +102,6 @@ public class PilotRobot {
 		}
 	}
 	
-	public void turnHead(int angle) {
-		Motor.C.rotate(angle);
-	}
 	public float getDistance() {
     	distSP.fetchSample(distSample, 0);
     	return distSample[0];
@@ -137,34 +145,14 @@ public class PilotRobot {
     	pilot.setAngularAcceleration(70);
 		pilot.rotate(angle);
 		adjustPosition(angle);
-		updatesGridProb();
-    }
-    public void updatesGridProb() {
-		int head = getDirectionHeading();
-		probModel.probabilisticModel(getDistance(), head);
-		turnHead(90);
-		if(head == 3) {
-			probModel.probabilisticModel(getDistance(), 0);	
-		}
-		else {
-			probModel.probabilisticModel(getDistance(), head+1);
-		}
-		turnHead(-180);
-		if(head == 0) {
-			probModel.probabilisticModel(getDistance(), 3);	
-		}
-		else {
-			probModel.probabilisticModel(getDistance(), head-1);
-		}		
-		turnHead(90);
-    	
+		probModel.probabilisticModel(getDistance());
     }
     public void run(float distance) {
 		float angleBefore = getAngle();
     	getPilot().travel(distance);
 		float diff = angleBefore - getAngle();
 		pilot.rotate(diff);
-		updatesGridProb();
+		probModel.probabilisticModel(getDistance());
     }
     public void setPose() {
     	myPose = opp.getPose();
@@ -190,24 +178,24 @@ public class PilotRobot {
 		int side = getDirectionHeading();
 		switch (side) {
 		case 0: // Facing the initial position
-			if(getDistance() < 0.08 && (stateCell.y) != 7) {
+			if(getDistance() < 0.08 && (stateCell.x) != 6) {
 				map[stateCell.y + 1][stateCell.x].obstacle = true;
 			}
 			break;
 		case 1: // Turned to the right from the initial position
-			if(getDistance() < 0.08 &&(stateCell.x) != 6) {
+			if(getDistance() < 0.08 &&(stateCell.y) != 7) {
 				map[stateCell.y][stateCell.x + 1].obstacle = true;
 			}
 			break;
 			
 		case 2: // Turned 180 from the initial position
-			if(getDistance() < 0.08 && (stateCell.y) != 1 ) {
+			if(getDistance() < 0.08 && (stateCell.x) != 1 ) {
 				map[stateCell.y - 1][stateCell.x].obstacle = true;
 			}
 			break;
 			
 		case 3: // Turned to the left from the initial position
-			if(getDistance() < 0.08 && (stateCell.x) != 1 ) {
+			if(getDistance() < 0.08 && (stateCell.y) != 1 ) {
 				map[stateCell.y][stateCell.x - 1].obstacle = true;
 			}
 			break;
